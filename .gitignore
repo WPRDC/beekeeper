@@ -1,0 +1,12 @@
+*.swp
+*.pyc
+TODO
+last_scan.json
+__pycache__/
+parameters/
+archive/
+credentials.py
+watchdog/credentials.py
+watchdog/__pycache__/
+watchdog/leash.py
+hive-notes.txt
