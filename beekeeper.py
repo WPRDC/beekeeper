@@ -9,8 +9,6 @@ import os, sys, json, requests, time, textwrap, traceback, ckanapi, fire
 
 from datetime import datetime, timedelta, date
 from dateutil import parser
-from dateutil.easter import * # pip install python-dateutil
-from calendar import monthrange
 
 from copy import copy
 
@@ -87,7 +85,7 @@ def get_number_of_rows(site,resource_id,API_key=None):
 #                              'OwnerZip': 'text',
 #                              'ValidDate': 'text'}}
 #
-# [ ] So, both the schema and the count can be obtained in one call.
+# [ ] So, both the schema and the count could be obtained in one call.
 
 def get_schema(site, resource_id, API_key=None):
     # In principle, it should be possible to do this using the datastore_info
@@ -103,7 +101,6 @@ def get_schema(site, resource_id, API_key=None):
         return None
 
     return schema
-
 
 def get_resource_data(site,resource_id,API_key=None,count=50,offset=0,fields=None):
     # Use the datastore_search API endpoint to get <count> records from
@@ -192,7 +189,7 @@ def apply_function_to_all_records(site, resource_id, field_name, assertion_funct
         #http://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module/16511493#16511493
     if assertion_failed:
         return False
-    
+
     if failures == failure_limit:
         raise ValueError("apply_function_to_all_records() failed to get all the records.")
     return not assertion_failed
@@ -267,7 +264,7 @@ beeswax = [{
 
 # 2) Have a beeswax.json version of the hard-coded beeswax list.
 #       Here the functionalize function is used so that 'assertion'
-#       can just be a string and functionalize can assign the 
+#       can just be a string and functionalize can assign the
 #       actual function, but that still means that a new check
 #       could require the modification of the functionalize
 #       function.
