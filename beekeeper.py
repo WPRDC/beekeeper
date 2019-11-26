@@ -68,7 +68,6 @@ def get_number_of_rows(site,resource_id,API_key=None):
     ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
     results_dict = ckan.action.datastore_info(id = resource_id)
     try:
-        print("Trying to get datastore info.")
         ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
         results_dict = ckan.action.datastore_info(id = resource_id)
         return results_dict['meta']['count']
@@ -246,6 +245,7 @@ def mind_package(b, **kwargs):
 
 def mind_beeswax(**kwargs):
     for b in beeswax:
+        print(f" === {b['name']} === ")
         if 'resource_id' in b:
             mind_resource(b, **kwargs)
         elif 'package_id' in b:
@@ -259,10 +259,11 @@ def mind_beeswax(**kwargs):
 # datastore_info doesn't work on private datasets because private datasets don't have queryable datastores.
 
 
-# Ways to specify checks:
+# Potential ways to specify checks:
 
 #1) Hard-code a list of beeswax dicts.
 beeswax = [{
+    'name': "Dog License ZIP-code checker",
     'resource_id': "37b11f07-361f-442a-966e-fbdc5eef0840",
     'field_name': "OwnerZip",
     'assertion': 'int'
