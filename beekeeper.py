@@ -197,22 +197,22 @@ def apply_function_to_all_records(site, resource_id, field_name, assertion_funct
         raise ValueError("apply_function_to_all_records() failed to get all the records.")
     return not assertion_failed
 
-
-def mind_resource(resource_id, field_name, assertion_function, **kwargs):
+def mind_resource(b, **kwargs):
     from credentials import site, ckan_api_key as API_key
-    schema = get_schema(site, resource_id, API_key=API_key)
+    schema = get_schema(site, b['resource_id'], API_key=API_key)
     field_names = [s['id'] for s in schema]
-    if field_name in field_names:
+    assertion_function = functionalize(b['assertion'])
+    if b['field_name'] in field_names:
         # Run assertion_function on all values in the field.
-        everything_is_fine = apply_function_to_all_records(site, resource_id, field_name, assertion_function, API_key)
+        everything_is_fine = apply_function_to_all_records(site, b['resource_id'], b['field_name'], assertion_function, API_key)
         if everything_is_fine:
             print("Everything is fine.")
         else:
-            msg = f"The assertion {assertion_function} failed on field name '{field_name}' for resource with ID {resource_id}."
+            msg = f"The assertion {assertion_function} failed on field name '{b['field_name']}' for resource with ID {b['resource_id']}."
             print(msg)
             buzz(kwargs['mute_alerts'], msg)
     else:
-        msg = f"Unable to find field called '{field_name}' in schema for resource with resource ID {resource_id}."
+        msg = f"Unable to find field called '{b['field_name']}' in schema for resource with resource ID {b['resource_id']}."
         print(msg)
         buzz(kwargs['mute_alerts'], msg)
 
@@ -222,14 +222,20 @@ def get_all_resources(package_id):
     metadata = ckan.action.package_show(id=package_id)
     return metadata['resources']
 
-def mind_package(package_id, field_name, assertion, **kwargs):
-    assertion_function = functionalize(assertion)
+def mind_package(b, **kwargs):
+    # Currently this function just applies the assertion to
+    # resources within the package. However, there could also
+    # be assertions that target the metadata of a pacakge or resource,
+    # so an assertion type or assertion target might be a useful
+    # way of representing that.
     # Get all resources in package
-    resources = get_all_resources(package_id)
+    resources = get_all_resources(b['package_id'])
 
     for resource_id in resource_ids:
-        # [ ] Check whether the resource even has a datastore.
-        mind_resource(resource_id, field_name, assertion_function, **kwargs)
+        if has_public_datastore(resource_id):
+            b_resource = dict(b)
+            b_resource['resource_id'] = resource_id
+            mind_resource(b_resource, **kwargs)
 
 def mind_beeswax(**kwargs):
     for b in beeswax:
