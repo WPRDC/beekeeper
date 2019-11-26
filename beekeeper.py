@@ -288,21 +288,21 @@ beeswax = [{
 from credentials import production
 try:
     if __name__ == '__main__':
-        mute_alerts = not production
+        kwargs = {}
+        kwargs['mute_alerts'] = not production
         check_private_datasets = False
-        skip_watchdog = False
-        test_mode = False
+        kwargs['test_mode'] = False
         args = sys.argv[1:]
         copy_of_args = list(args)
         for k,arg in enumerate(copy_of_args):
             if arg in ['mute', 'mute_alerts']:
-                mute_alerts = True
+                kwargs['mute_alerts'] = True
                 args.remove(arg)
             elif arg in ['test']:
-                test_mode = True
+                kwargs['test_mode'] = True
                 args.remove(arg)
             elif arg in ['production']:
-                test_mode = False
+                kwargs['test_mode'] = False
                 args.remove(arg)
             #elif arg in ['private']: # This won't work.
             #    check_private_datasets = True
@@ -310,7 +310,7 @@ try:
         if len(args) > 0:
             print("Unused command-line arguments: {}".format(args))
 
-        mind_beeswax(mute_alerts,test_mode)
+        mind_beeswax(**kwargs)
 
 except:
     e = sys.exc_info()[0]
