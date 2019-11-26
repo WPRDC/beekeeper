@@ -22,6 +22,10 @@ try:
 except ImportError:  # Graceful fallback if IceCream isn't installed.
     ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 
+def buzz(mute_alerts, msg, username='beekeeper', channel='@david', icon=':bee:'):
+    if not mute_alerts:
+        send_to_slack(msg, username, channel, icon)
+
 def get_archive_path():
     # Change path to script's path for cron job.
     abspath = os.path.abspath(__file__)
@@ -206,13 +210,11 @@ def mind_resource(resource_id, field_name, assertion_function, **kwargs):
         else:
             msg = f"The assertion {assertion_function} failed on field name '{field_name}' for resource with ID {resource_id}."
             print(msg)
-            if not kwargs['mute_alerts']:
-                send_to_slack(msg, username='beekeeper/beekeeper.py', channel='@david', icon=':illuminati:')
+            buzz(kwargs['mute_alerts'], msg)
     else:
         msg = f"Unable to find field called '{field_name}' in schema for resource with resource ID {resource_id}."
         print(msg)
-        if not kwargs['mute_alerts']:
-            send_to_slack(msg, username='beekeeper/beekeeper.py', channel='@david', icon=':illuminati:')
+        buzz(kwargs['mute_alerts'], msg)
 
 def get_all_resources(package_id):
     from credentials import site, ckan_api_key as API_key
@@ -306,4 +308,4 @@ except:
     msg = "beekeeper/beekeeper.py failed for some reason.\n" + msg
     print(msg) # Log it or whatever here
     if production:
-        send_to_slack(msg,username='beekeeper',channel='@david',icon=':illuminati:')
+        buzz(mute_alerts, msg, username='beekeeper', channel='@david', icon=':illuminati:')
