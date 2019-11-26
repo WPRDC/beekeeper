@@ -219,6 +219,16 @@ def get_all_resources(package_id):
     metadata = ckan.action.package_show(id=package_id)
     return metadata['resources']
 
+def get_resource_metadata(resource_id):
+    from credentials import site, ckan_api_key as API_key
+    ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
+    metadata = ckan.action.resource_show(id=resource_id)
+    return metadata
+
+def has_public_datastore(resource_id):
+    metadata = get_resource_metadata(resource_id)
+    return metadata['datastore_active']
+
 def mind_package(b, **kwargs):
     # Currently this function just applies the assertion to
     # resources within the package. However, there could also
