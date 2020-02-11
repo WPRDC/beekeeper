@@ -308,6 +308,22 @@ beeswax = [
     'target': 'datastore', # Could also be, for instance, 'metadata'.
     'treatment': make_package_private, # Function to run if the assertion is violated.
     },
+    {
+    'name': "Dog License ZIP-code checker (2020)",
+    'resource_id': "75e867fe-3154-4be8-a7f3-5909653e5c06",
+    'field_name': "OwnerZip",
+    'assertion': 'int',
+    'target': 'datastore', # Could also be, for instance, 'metadata'.
+    'treatment': make_package_private, # Function to run if the assertion is violated.
+    },
+    {
+    'name': "Dog License ZIP-code checker (Lifetime Dog License)",
+    'resource_id': "f8ab32f7-44c7-43ca-98bf-c1b444724598",
+    'field_name': "OwnerZip",
+    'assertion': 'int',
+    'target': 'datastore', # Could also be, for instance, 'metadata'.
+    'treatment': make_package_private, # Function to run if the assertion is violated.
+    },
     ]
 
 # A beeswax dict can specify a resource ID (to run the test just on
