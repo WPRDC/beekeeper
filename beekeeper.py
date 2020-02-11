@@ -56,9 +56,15 @@ def pluralize(word,xs,return_count=True,count=None):
     else:
         return "{}{}".format(word,'' if count == 1 else 's')
 
+def int_checker(x):
+    try:
+        return type(int(x)) == int
+    except ValueError:
+        return False
+
 def functionalize(assertion):
     if assertion == 'int':
-        return lambda x: type(int(x)) == int
+        return int_checker
     raise ValueError(f"No function currently assigned to {assertion}.")
 
 def get_number_of_rows(site,resource_id,API_key=None):
