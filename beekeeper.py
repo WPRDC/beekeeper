@@ -14,6 +14,8 @@ from copy import copy
 
 from notify import send_to_slack
 
+from ckan_util import set_package_parameters_to_values
+
 from pprint import pprint
 try:
     from icecream import ic
@@ -158,7 +160,7 @@ def apply_function_to_all_records(site, resource_id, field_name, assertion_funct
 
     failure_limit = 5
     while len(all_records) < row_count and failures < failure_limit and not assertion_failed:
-        time.sleep(0.01)
+        time.sleep(0.1)
         try:
             records = get_resource_data(site, resource_id, API_key, chunk_size, offset, [field_name])
             for record in records:
@@ -205,6 +207,13 @@ def apply_function_to_all_records(site, resource_id, field_name, assertion_funct
         raise ValueError("apply_function_to_all_records() failed to get all the records.")
     return not assertion_failed
 
+def apply_treatment(b, **kwargs):
+    if 'treatment' in b:
+        msg = f"As a response to {b} failing its assertion, {b['treatment']} is being applied."
+        print(msg)
+        buzz(kwargs['mute_alerts'], msg)
+        b['treatment'](b)
+
 def mind_resource(b, **kwargs):
     from credentials import site, ckan_api_key as API_key
     schema = get_schema(site, b['resource_id'], API_key=API_key)
@@ -216,9 +225,10 @@ def mind_resource(b, **kwargs):
         if everything_is_fine:
             print("Everything is fine.")
         else:
-            msg = f"The assertion {assertion_function} failed on field name '{b['field_name']}' for resource with ID {b['resource_id']}."
+            msg = f" ** The assertion {assertion_function} failed on field name '{b['field_name']}' for resource with ID {b['resource_id']}. **"
             print(msg)
             buzz(kwargs['mute_alerts'], msg)
+            apply_treatment(b, **kwargs)
     else:
         msg = f"Unable to find field called '{b['field_name']}' in schema for resource with resource ID {b['resource_id']}."
         print(msg)
@@ -239,6 +249,21 @@ def get_resource_metadata(resource_id):
 def has_public_datastore(resource_id):
     metadata = get_resource_metadata(resource_id)
     return metadata['datastore_active']
+
+
+def package_id_of(b):
+    if 'package_id' in b:
+        return b['package_id']
+    if 'resource_id' in b:
+        metadata = get_resource_metadata(b['resource_id'])
+        return metadata['package_id']
+    raise ValueError(f"Unable to find package ID for {b}.")
+
+def make_package_private(b):
+    package_id = package_id_of(b)
+    from credentials import site, ckan_api_key as API_key
+    set_package_parameters_to_values(site, package_id, ['private'], [True], API_key)
+    print(f"Made the package {package_id} private.")
 
 def mind_package(b, **kwargs):
     # Currently this function just applies the assertion to
@@ -274,12 +299,16 @@ def mind_beeswax(**kwargs):
 # Potential ways to specify checks:
 
 #1) Hard-code a list of beeswax dicts.
-beeswax = [{
-    'name': "Dog License ZIP-code checker",
+beeswax = [
+    {
+    'name': "Dog License ZIP-code checker (2019)",
     'resource_id': "37b11f07-361f-442a-966e-fbdc5eef0840",
     'field_name': "OwnerZip",
-    'assertion': 'int'
-    }]
+    'assertion': 'int',
+    'target': 'datastore', # Could also be, for instance, 'metadata'.
+    'treatment': make_package_private, # Function to run if the assertion is violated.
+    },
+    ]
 
 # A beeswax dict can specify a resource ID (to run the test just on
 # that resource) or a package ID (to run the test on all resources
