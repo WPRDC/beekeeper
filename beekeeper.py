@@ -171,6 +171,12 @@ def apply_function_to_all_records(site, resource_id, field_name, assertion_funct
             failures = 0
             offset += chunk_size
         except:
+            e = sys.exc_info()[0]
+            msg = "Error: {} : \n".format(e)
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            msg = ''.join('!! ' + line for line in lines)
+            print(msg) # Dump exception details to the console.
             failures += 1
 
         # If the number of rows is a moving target, incorporate
