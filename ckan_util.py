@@ -1,5 +1,36 @@
 import ckanapi
 
+def get_all_resources(package_id):
+    from credentials import site, ckan_api_key as API_key
+    ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
+    metadata = ckan.action.package_show(id=package_id)
+    return metadata['resources']
+
+def get_resource_metadata(resource_id):
+    from credentials import site, ckan_api_key as API_key
+    ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
+    metadata = ckan.action.resource_show(id=resource_id)
+    return metadata
+
+def has_public_datastore(resource_id):
+    metadata = get_resource_metadata(resource_id)
+    return metadata['datastore_active']
+
+
+def package_id_of(b):
+    if 'package_id' in b:
+        return b['package_id']
+    if 'resource_id' in b:
+        metadata = get_resource_metadata(b['resource_id'])
+        return metadata['package_id']
+    raise ValueError(f"Unable to find package ID for {b}.")
+
+def make_package_private(b):
+    package_id = package_id_of(b)
+    from credentials import site, ckan_api_key as API_key
+    set_package_parameters_to_values(site, package_id, ['private'], [True], API_key)
+    print(f"Made the package {package_id} private.")
+
 def get_package_parameter(site,package_id,parameter=None,API_key=None):
     """Gets a CKAN package parameter. If no parameter is specified, all metadata
     for that package is returned."""
@@ -36,4 +67,12 @@ def set_package_parameters_to_values(site, package_id, parameters, new_values, A
     results = ckan.action.package_patch(**payload)
     #print(results)
     print("Changed the parameters {} from {} to {} on package {}".format(parameters, original_values, new_values, package_id))
+
+def package_is_private(site, package_id, API_key=None):
+    return get_package_parameter(site, package_id, 'private', API_key)
+
+def resource_is_private(site, resource_id, API_key=None):
+    metadata = get_resource_metadata(resource_id)
+    package_id = metadata['package_id']
+    return get_package_parameter(site, package_id, 'private', API_key)
 

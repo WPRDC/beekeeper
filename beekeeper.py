@@ -13,8 +13,8 @@ from dateutil import parser
 from copy import copy
 
 from notify import send_to_slack
-
-from ckan_util import set_package_parameters_to_values
+from fetch import fetch_data_file, get_data_by_field
+from ckan_util import set_package_parameters_to_values, package_is_private, resource_is_private, get_all_resources, has_public_datastore, package_id_of, make_package_private
 
 from pprint import pprint
 try:
@@ -233,37 +233,6 @@ def mind_resource(b, **kwargs):
         msg = f"Unable to find field called '{b['field_name']}' in schema for resource with resource ID {b['resource_id']}."
         print(msg)
         buzz(kwargs['mute_alerts'], msg)
-
-def get_all_resources(package_id):
-    from credentials import site, ckan_api_key as API_key
-    ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
-    metadata = ckan.action.package_show(id=package_id)
-    return metadata['resources']
-
-def get_resource_metadata(resource_id):
-    from credentials import site, ckan_api_key as API_key
-    ckan = ckanapi.RemoteCKAN(site, apikey=API_key)
-    metadata = ckan.action.resource_show(id=resource_id)
-    return metadata
-
-def has_public_datastore(resource_id):
-    metadata = get_resource_metadata(resource_id)
-    return metadata['datastore_active']
-
-
-def package_id_of(b):
-    if 'package_id' in b:
-        return b['package_id']
-    if 'resource_id' in b:
-        metadata = get_resource_metadata(b['resource_id'])
-        return metadata['package_id']
-    raise ValueError(f"Unable to find package ID for {b}.")
-
-def make_package_private(b):
-    package_id = package_id_of(b)
-    from credentials import site, ckan_api_key as API_key
-    set_package_parameters_to_values(site, package_id, ['private'], [True], API_key)
-    print(f"Made the package {package_id} private.")
 
 def mind_package(b, **kwargs):
     # Currently this function just applies the assertion to
