@@ -58,11 +58,12 @@ def pluralize(word,xs,return_count=True,count=None):
     else:
         return "{}{}".format(word,'' if count == 1 else 's')
 
-def int_checker(x):
+def int_checker(x, reference_values):
     try:
-        return type(int(x)) == int
+        return type(int(x)) == int, reference_values
     except ValueError:
-        return False
+        print(f"int_checker has failed on a value of {x}.")
+        return False, reference_values
 
 def functionalize(assertion):
     if assertion == 'int':
@@ -147,7 +148,7 @@ def get_resource_data(site,resource_id,API_key=None,count=50,offset=0,fields=Non
 def select(field_name, record):
     return record[field_name]
 
-def apply_function_to_all_records(site, resource_id, field_name, assertion_function, API_key=None, chunk_size=5000):
+def apply_function_to_all_records(site, b, resource_id, field_name, assertion_function, reference_values, API_key=None, chunk_size=5000):
     all_records = []
     assertion_failed = False
     failures = 0
@@ -164,8 +165,8 @@ def apply_function_to_all_records(site, resource_id, field_name, assertion_funct
         try:
             records = get_resource_data(site, resource_id, API_key, chunk_size, offset, [field_name])
             for record in records:
-                if not assertion_function(select(field_name, record)):
-
+                assertion_succeeded, reference_values = assertion_function(select(field_name, record), reference_values)
+                if not assertion_succeeded:
                     assertion_failed = True
                     break
             if records is not None:
@@ -218,10 +219,11 @@ def mind_resource(b, **kwargs):
     from credentials import site, ckan_api_key as API_key
     schema = get_schema(site, b['resource_id'], API_key=API_key)
     field_names = [s['id'] for s in schema]
+    reference_values = []
     assertion_function = functionalize(b['assertion'])
     if b['field_name'] in field_names:
         # Run assertion_function on all values in the field.
-        everything_is_fine = apply_function_to_all_records(site, b['resource_id'], b['field_name'], assertion_function, API_key)
+        everything_is_fine = apply_function_to_all_records(site, b, b['resource_id'], b['field_name'], assertion_function, reference_values, API_key)
         if everything_is_fine:
             print("Everything is fine.")
         else:
