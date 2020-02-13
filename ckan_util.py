@@ -75,4 +75,3 @@ def resource_is_private(site, resource_id, API_key=None):
     metadata = get_resource_metadata(resource_id)
     package_id = metadata['package_id']
     return get_package_parameter(site, package_id, 'private', API_key)
-

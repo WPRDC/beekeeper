@@ -58,12 +58,15 @@ def pluralize(word,xs,return_count=True,count=None):
     else:
         return "{}{}".format(word,'' if count == 1 else 's')
 
+## BEGIN Assertion Funtions ##
 def int_checker(x, reference_values):
     try:
         return type(int(x)) == int, reference_values
     except ValueError:
         print(f"int_checker has failed on a value of {x}.")
         return False, reference_values
+
+## END Assertion Funtions ##
 
 def functionalize(assertion):
     if assertion == 'int':
@@ -156,8 +159,8 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
     offset = 0 # offset is almost k*chunk_size (but not quite)
     row_count = get_number_of_rows(site, resource_id, API_key)
     if row_count == 0: # or if the datastore is not active
-       print("No data found in the datastore.")
-       return True
+        print("No data found in the datastore.")
+        return True
 
     failure_limit = 5
     while len(all_records) < row_count and failures < failure_limit and not assertion_failed:
