@@ -242,6 +242,11 @@ def apply_treatment(b, **kwargs):
 
 def mind_resource(b, **kwargs):
     from credentials import site, ckan_api_key as API_key
+    # If the resource is private, what should be done?
+    if resource_is_private(site, b['resource_id'], API_key):
+        print("This resource is private, so the test can not be run.")
+        return
+
     schema = get_schema(site, b['resource_id'], API_key=API_key)
     field_names = [s['id'] for s in schema]
     reference_values = []
