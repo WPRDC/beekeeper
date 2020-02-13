@@ -189,6 +189,7 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
                 all_records += records
             failures = 0
             offset += chunk_size
+            print('.', end = '', flush = True)
         except:
             e = sys.exc_info()[0]
             msg = "Error: {} : \n".format(e)
@@ -217,6 +218,8 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
 
         # Information about better ways to handle requests exceptions:
         #http://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module/16511493#16511493
+
+    print("\n")
     if assertion_failed:
         return False
 
