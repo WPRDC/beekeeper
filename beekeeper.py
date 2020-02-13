@@ -219,7 +219,6 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
         # Information about better ways to handle requests exceptions:
         #http://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module/16511493#16511493
 
-    print("\n")
     # Post-loop check (like when verifying that all reference values are contained within a column of the dataset) should be done here.
     if 'post-loop_assertion' in b:
         final_assertion_function = functionalize(b['post-loop_assertion'])
@@ -261,7 +260,7 @@ def mind_resource(b, **kwargs):
         # Run assertion_function on all values in the field.
         everything_is_fine = apply_function_to_all_records(site, b, b['resource_id'], b['field_name'], assertion_function, reference_values, API_key)
         if everything_is_fine:
-            print("Everything is fine.")
+            print("\nEverything is fine.")
         else:
             msg = f" ** The assertion {assertion_function} failed on field name '{b['field_name']}' for resource with ID {b['resource_id']}. **"
             print(msg)
