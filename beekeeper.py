@@ -312,6 +312,23 @@ def mind_beeswax(**kwargs):
 #1) Hard-code a list of beeswax dicts.
 beeswax = [
     {
+    'name': "Right-of-Way Permits completeness checker",
+    'resource_id': "cc17ee69-b4c8-4b0c-8059-23af341c9214",
+    'field_name': "id",
+    'assertion': 'contains_values',
+    'post-loop_assertion': 'no_more_references',
+    'reference':
+        {
+            'publisher': 'pgh',
+            'type': 'ftp',
+            #'directory': '/', # It's actually in the /pitt directory,
+            # but that's already built into the expectations of the
+            # FTP function.
+            'file': 'right_of_way_permits.csv',
+        },
+    'target': 'datastore', # Could also be, for instance, 'metadata'.
+    },
+    {
     'name': "Dog License ZIP-code checker (2019)",
     'resource_id': "37b11f07-361f-442a-966e-fbdc5eef0840",
     'field_name': "OwnerZip",
