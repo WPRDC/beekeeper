@@ -223,6 +223,13 @@ def mind_resource(b, **kwargs):
     schema = get_schema(site, b['resource_id'], API_key=API_key)
     field_names = [s['id'] for s in schema]
     reference_values = []
+    if b['assertion'] in ['contains_values']:
+        # Prepare reference values
+        # 1) Get file from source and save to reference_files directory
+        local_filepath = fetch_data_file(b)
+        # 2) Pull out reference values
+        reference_values = get_data_by_field(local_filepath, 'id')
+
     assertion_function = functionalize(b['assertion'])
     if b['field_name'] in field_names:
         # Run assertion_function on all values in the field.
