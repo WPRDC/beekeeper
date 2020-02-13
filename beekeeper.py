@@ -220,6 +220,12 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
         #http://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module/16511493#16511493
 
     print("\n")
+    # Post-loop check (like when verifying that all reference values are contained within a column of the dataset) should be done here.
+    if 'post-loop_assertion' in b:
+        final_assertion_function = functionalize(b['post-loop_assertion'])
+        post_loop_assertion_failed, reference_values = final_assertion_function([], reference_values)
+        assertion_failed = assertion_failed and post_loop_assertion_failed
+
     if assertion_failed:
         return False
 
