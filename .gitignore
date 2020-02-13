@@ -4,6 +4,7 @@ TODO
 last_scan.json
 __pycache__/
 parameters/
+reference_files/
 archive/
 credentials.py
 watchdog/credentials.py
