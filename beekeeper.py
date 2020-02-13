@@ -66,11 +66,24 @@ def int_checker(x, reference_values):
         print(f"int_checker has failed on a value of {x}.")
         return False, reference_values
 
+def compare(xs, reference_values):
+    # [ ] Since this, the second assertion function, does not do any actual assertions,
+    # the "assertion" terminology below should be generalized.
+    # operation_function? operation? record_level_operation?
+    new_reference_values = [r for r in reference_values if r not in xs]
+    return True, new_reference_values
+
+def no_more_references(xs, reference_values):
+    return len(reference_values) == 0, reference_values
 ## END Assertion Funtions ##
 
 def functionalize(assertion):
     if assertion == 'int':
         return int_checker
+    if assertion == 'contains_values':
+        return compare
+    if assertion == 'no_more_references':
+        return no_more_references
     raise ValueError(f"No function currently assigned to {assertion}.")
 
 def get_number_of_rows(site,resource_id,API_key=None):
