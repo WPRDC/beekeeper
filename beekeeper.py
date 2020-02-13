@@ -242,7 +242,6 @@ def apply_treatment(b, **kwargs):
 
 def mind_resource(b, **kwargs):
     from credentials import site, ckan_api_key as API_key
-    # If the resource is private, what should be done?
     if resource_is_private(site, b['resource_id'], API_key):
         print("This resource is private, so the test can not be run.")
         return
@@ -279,6 +278,10 @@ def mind_package(b, **kwargs):
     # be assertions that target the metadata of a pacakge or resource,
     # so an assertion type or assertion target might be a useful
     # way of representing that.
+    from credentials import site, ckan_api_key as API_key
+    if package_is_private(site, b['package_id'], API_key):
+        print("This package is private, so the test can not be run.")
+        return
     # Get all resources in package
     resources = get_all_resources(b['package_id'])
 
