@@ -73,8 +73,8 @@ def compare(xs, reference_values):
     new_reference_values = [r for r in reference_values if r not in xs]
     return True, new_reference_values
 
-def no_more_references(xs, reference_values):
-    return len(reference_values) == 0, reference_values
+def leftover_references(xs, reference_values):
+    return len(reference_values) != 0, reference_values
 ## END Assertion Funtions ##
 
 def functionalize(assertion):
@@ -82,8 +82,8 @@ def functionalize(assertion):
         return int_checker
     if assertion == 'contains_values':
         return compare
-    if assertion == 'no_more_references':
-        return no_more_references
+    if assertion == 'leftover_references':
+        return leftover_references
     raise ValueError(f"No function currently assigned to {assertion}.")
 
 def get_number_of_rows(site,resource_id,API_key=None):
@@ -182,6 +182,10 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
             records = get_resource_data(site, resource_id, API_key, chunk_size, offset, [field_name])
             for record in records:
                 assertion_succeeded, reference_values = assertion_function(select(field_name, record), reference_values)
+                # When using 'compare_values', the action of the assertion function is to reduce the list of reference
+                # values (values from the FTP source file) by the value pulled from a CKAN record:
+                #    new_reference_values = [r for r in reference_values if r not in xs]
+                # THEN the post-loop assertion checks that new_reference_values has been reduced to an empty list.
                 if not assertion_succeeded:
                     assertion_failed = True
                     break
@@ -223,7 +227,7 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
     if 'post-loop_assertion' in b:
         final_assertion_function = functionalize(b['post-loop_assertion'])
         post_loop_assertion_failed, reference_values = final_assertion_function([], reference_values)
-        assertion_failed = assertion_failed and post_loop_assertion_failed
+        assertion_failed = assertion_failed or post_loop_assertion_failed
 
     if assertion_failed:
         return False
@@ -315,7 +319,7 @@ beeswax = [
     'resource_id': "cc17ee69-b4c8-4b0c-8059-23af341c9214",
     'field_name': "id",
     'assertion': 'contains_values',
-    'post-loop_assertion': 'no_more_references',
+    'post-loop_assertion': 'leftover_references',
     'reference':
         {
             'publisher': 'pgh',
