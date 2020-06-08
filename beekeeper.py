@@ -406,4 +406,4 @@ except:
     msg = "beekeeper/beekeeper.py failed for some reason.\n" + msg
     print(msg) # Log it or whatever here
     if production:
-        buzz(mute_alerts, msg, username='beekeeper', channel='@david', icon=':illuminati:')
+        buzz(kwargs['mute_alerts'], msg, username='beekeeper', channel='@david', icon=':illuminati:')
