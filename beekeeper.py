@@ -63,7 +63,7 @@ def int_checker(x, reference_values):
     try:
         return type(int(x)) == int, reference_values
     except ValueError:
-        print(f"int_checker has failed on a value of {x}.")
+        print("int_checker has failed on a value of {}.".format(x))
         return False, reference_values
 
 def compare(xs, reference_values):
@@ -84,7 +84,7 @@ def functionalize(assertion):
         return compare
     if assertion == 'leftover_references':
         return leftover_references
-    raise ValueError(f"No function currently assigned to {assertion}.")
+    raise ValueError("No function currently assigned to {}.".format(assertion))
 
 def get_number_of_rows(site,resource_id,API_key=None):
     """Returns the number of rows in a datastore. Note that even when there is a limit
@@ -238,7 +238,7 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
 
 def apply_treatment(b, **kwargs):
     if 'treatment' in b:
-        msg = f"As a response to {b} failing its assertion, {b['treatment']} is being applied."
+        msg = "As a response to {} failing its assertion, {} is being applied.".format(b, b['treatment'])
         print(msg)
         buzz(kwargs['mute_alerts'], msg)
         b['treatment'](b)
@@ -266,12 +266,12 @@ def mind_resource(b, **kwargs):
         if everything_is_fine:
             print("\nEverything is fine.")
         else:
-            msg = f" ** The assertion {assertion_function} failed on field name '{b['field_name']}' for resource with ID {b['resource_id']}. **"
+            msg = " ** The assertion {} failed on field name '{}' for resource with ID {}. **".format(assertion_function, b['field_name'], b['resource_id'])
             print(msg)
             buzz(kwargs['mute_alerts'], msg)
             apply_treatment(b, **kwargs)
     else:
-        msg = f"Unable to find field called '{b['field_name']}' in schema for resource with resource ID {b['resource_id']}."
+        msg = "Unable to find field called '{}' in schema for resource with resource ID {}.".format(b['field_name'], b['resource_id'])
         print(msg)
         buzz(kwargs['mute_alerts'], msg)
 
@@ -296,13 +296,13 @@ def mind_package(b, **kwargs):
 
 def mind_beeswax(**kwargs):
     for b in beeswax:
-        print(f" === {b['name']} === ")
+        print(" === {} === ".format(b['name']))
         if 'resource_id' in b:
             mind_resource(b, **kwargs)
         elif 'package_id' in b:
             mind_package(b, **kwargs)
         else:
-            raise ValueError(f"mind_beeswax does not know how to handle this task: {b}")
+            raise ValueError("mind_beeswax does not know how to handle this task: {}".format(b))
 
 
 #mind_resource(resource_id="37b11f07-361f-442a-966e-fbdc5eef0840", field_name="OwnerZip", assertion_function=functionalize("int"), mute_alerts=True)
