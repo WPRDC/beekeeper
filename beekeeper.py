@@ -74,6 +74,9 @@ def compare(xs, reference_values):
     return True, new_reference_values
 
 def leftover_references(xs, reference_values):
+    if len(reference_values) != 0:
+        print(f"Here are the leftover reference values: {', '.join(reference_values)}")
+        print(f"This is a total of {len(reference_values)}.")
     return len(reference_values) != 0, reference_values
 ## END Assertion Funtions ##
 
