@@ -257,7 +257,7 @@ def mind_resource(b, **kwargs):
         # 1) Get file from source and save to reference_files directory
         local_filepath = fetch_data_file(b)
         # 2) Pull out reference values
-        reference_values = get_data_by_field(local_filepath, 'id')
+        reference_values = get_data_by_field(local_filepath, b['source_field_name'])
 
     assertion_function = functionalize(b['assertion'])
     if b['field_name'] in field_names:
@@ -318,6 +318,9 @@ beeswax = [
     'name': "Right-of-Way Permits completeness checker",
     'resource_id': "cc17ee69-b4c8-4b0c-8059-23af341c9214",
     'field_name': "id",
+    'source_field_name': "display", # We need to explicitly specify
+    # the field name of the field in the source file to get the reference
+    # values from, since the source and CKAN field names may differ.
     'assertion': 'contains_values',
     'post-loop_assertion': 'leftover_references',
     'reference':
