@@ -185,7 +185,7 @@ def apply_function_to_all_records(site, b, resource_id, field_name, assertion_fu
             records = get_resource_data(site, resource_id, API_key, chunk_size, offset, [field_name])
             for record in records:
                 assertion_succeeded, reference_values = assertion_function(select(field_name, record), reference_values)
-                # When using 'compare_values', the action of the assertion function is to reduce the list of reference
+                # When using 'contains_values', the action of the assertion function is to reduce the list of reference
                 # values (values from the FTP source file) by the value pulled from a CKAN record:
                 #    new_reference_values = [r for r in reference_values if r not in xs]
                 # THEN the post-loop assertion checks that new_reference_values has been reduced to an empty list.
@@ -281,7 +281,7 @@ def mind_resource(b, **kwargs):
 def mind_package(b, **kwargs):
     # Currently this function just applies the assertion to
     # resources within the package. However, there could also
-    # be assertions that target the metadata of a pacakge or resource,
+    # be assertions that target the metadata of a package or resource,
     # so an assertion type or assertion target might be a useful
     # way of representing that.
     from credentials import site, ckan_api_key as API_key
@@ -309,7 +309,7 @@ def mind_beeswax(**kwargs):
 
 
 #mind_resource(resource_id="37b11f07-361f-442a-966e-fbdc5eef0840", field_name="OwnerZip", assertion_function=functionalize("int"), mute_alerts=True)
-#        "128b3ad6-5b2e-4112-bef1-08154190ad01" Resource ID of a private test version of Geocoded Foo Facilities. Guess what?
+#        "128b3ad6-5b2e-4112-bef1-08154190ad01" Resource ID of a private test version of Geocoded Food Facilities. Guess what?
 # datastore_info doesn't work on private datasets because private datasets don't have queryable datastores.
 
 
