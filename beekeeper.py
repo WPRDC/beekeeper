@@ -297,7 +297,10 @@ def mind_package(b, **kwargs):
             b_resource['resource_id'] = resource_id
             mind_resource(b_resource, **kwargs)
 
-def mind_beeswax(**kwargs):
+def mind_beeswax(beeswax, **kwargs):
+    if 'selected_codes' in kwargs:
+        beeswax = [w for w in beeswax if w.get('code', 'NO CODE') in kwargs['selected_codes']]
+        print(f"Selecting codes {kwargs['selected_codes']}")
     for b in beeswax:
         print(" === {} === ".format(b['name']))
         if 'resource_id' in b:
@@ -318,6 +321,7 @@ def mind_beeswax(**kwargs):
 #1) Hard-code a list of beeswax dicts.
 beeswax = [
     {
+    'code': 'right_of_way_completeness',
     'name': "Right-of-Way Permits completeness checker",
     'resource_id': "cc17ee69-b4c8-4b0c-8059-23af341c9214",
     'field_name': "id",
@@ -338,6 +342,7 @@ beeswax = [
     'target': 'datastore', # Could also be, for instance, 'metadata'.
     },
     {
+    'code': 'dog_license_zip_code_2019',
     'name': "Dog License ZIP-code checker (2019)",
     'resource_id': "37b11f07-361f-442a-966e-fbdc5eef0840",
     'field_name': "OwnerZip",
@@ -346,6 +351,7 @@ beeswax = [
     'treatment': make_package_private, # Function to run if the assertion is violated.
     },
     {
+    'code': 'dog_license_zip_code_2020',
     'name': "Dog License ZIP-code checker (2020)",
     'resource_id': "75e867fe-3154-4be8-a7f3-5909653e5c06",
     'field_name': "OwnerZip",
@@ -354,6 +360,7 @@ beeswax = [
     'treatment': make_package_private, # Function to run if the assertion is violated.
     },
     {
+    'code': 'dog_license_zip_code_lifetime',
     'name': "Dog License ZIP-code checker (Lifetime Dog License)",
     'resource_id': "f8ab32f7-44c7-43ca-98bf-c1b444724598",
     'field_name': "OwnerZip",
@@ -381,6 +388,8 @@ beeswax = [
 # parsing to work together.
 
 from credentials import production
+
+beeswax_codes = [w.get('code', None) for w in beeswax]
 try:
     if __name__ == '__main__':
         kwargs = {}
@@ -389,6 +398,7 @@ try:
         kwargs['test_mode'] = False
         args = sys.argv[1:]
         copy_of_args = list(args)
+        selected_codes = []
         for k,arg in enumerate(copy_of_args):
             if arg in ['mute', 'mute_alerts']:
                 kwargs['mute_alerts'] = True
@@ -402,10 +412,16 @@ try:
             #elif arg in ['private']: # This won't work.
             #    check_private_datasets = True
             #    args.remove(arg)
+            elif arg in beeswax_codes:
+                selected_codes.append(arg)
+                args.remove(arg)
+
+        if selected_codes != []:
+            kwargs['selected_codes'] = selected_codes
         if len(args) > 0:
             print("Unused command-line arguments: {}".format(args))
 
-        mind_beeswax(**kwargs)
+        mind_beeswax(beeswax, **kwargs)
 
 except:
     e = sys.exc_info()[0]
