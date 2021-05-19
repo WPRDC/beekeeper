@@ -320,27 +320,28 @@ def mind_beeswax(beeswax, **kwargs):
 
 #1) Hard-code a list of beeswax dicts.
 beeswax = [
-    {
-    'code': 'right_of_way_completeness',
-    'name': "Right-of-Way Permits completeness checker",
-    'resource_id': "cc17ee69-b4c8-4b0c-8059-23af341c9214",
-    'field_name': "id",
-    'source_field_name': "display", # We need to explicitly specify
-    # the field name of the field in the source file to get the reference
-    # values from, since the source and CKAN field names may differ.
-    'assertion': 'contains_values',
-    'post-loop_assertion': 'leftover_references',
-    'reference':
-        {
-            'publisher': 'pgh',
-            'type': 'ftp',
-            #'directory': '/', # It's actually in the /pitt directory,
-            # but that's already built into the expectations of the
-            # FTP function.
-            'file': 'right_of_way_permits.csv',
-        },
-    'target': 'datastore', # Could also be, for instance, 'metadata'.
-    },
+#    { # This is no longer needed now that the right-of-way permits have
+# been moved to Google Cloud Platform and the ETL job is entirely different.
+#    'code': 'right_of_way_completeness',
+#    'name': "Right-of-Way Permits completeness checker",
+#    'resource_id': "cc17ee69-b4c8-4b0c-8059-23af341c9214",
+#    'field_name': "id",
+#    'source_field_name': "display", # We need to explicitly specify
+#    # the field name of the field in the source file to get the reference
+#    # values from, since the source and CKAN field names may differ.
+#    'assertion': 'contains_values',
+#    'post-loop_assertion': 'leftover_references',
+#    'reference':
+#        {
+#            'publisher': 'pgh',
+#            'type': 'ftp',
+#            #'directory': '/', # It's actually in the /pitt directory,
+#            # but that's already built into the expectations of the
+#            # FTP function.
+#            'file': 'right_of_way_permits.csv',
+#        },
+#    'target': 'datastore', # Could also be, for instance, 'metadata'.
+#    },
     {
     'code': 'dog_license_zip_code_2019',
     'name': "Dog License ZIP-code checker (2019)",
